@@ -1,0 +1,137 @@
+% USEFUL LINKS:
+% -------------
+%
+% - UiO LaTeX guides:          https://www.mn.uio.no/ifi/tjenester/it/hjelp/latex/
+% - Mathematics:               https://en.wikibooks.org/wiki/LaTeX/Mathematics
+% - Physics:                   https://ctan.uib.no/macros/latex/contrib/physics/physics.pdf
+% - Basics of Tikz:            https://en.wikibooks.org/wiki/LaTeX/PGF/Tikz
+% - All the colors!            https://en.wikibooks.org/wiki/LaTeX/Colors
+% - How to make tables:        https://en.wikibooks.org/wiki/LaTeX/Tables
+% - Code listing styles:       https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+% - \includegraphics           https://en.wikibooks.org/wiki/LaTeX/Importing_Graphics
+% - Learn more about figures:  https://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions
+% - Automagic bibliography:    https://en.wikibooks.org/wiki/LaTeX/Bibliography_Management  (this one is kinda difficult the first time)
+%
+%                              (This document is of class "revtex4-1", the REVTeX Guide explains how the class works)
+%   REVTeX Guide:              http://www.physics.csbsju.edu/370/papers/Journal_Style_Manuals/auguide4-1.pdf
+%
+%
+% COMPILING THE .pdf FILE IN THE LINUX TERMINAL
+% ---------------------------------------------
+%
+% [terminal]$ pdflatex report_example.tex
+%
+% Run the command twice, always.
+%
+% When using references, footnotes, etc. you should run the following chain of commands:
+%
+% [terminal]$ pdflatex report_example.tex
+% [terminal]$ bibtex report_example
+% [terminal]$ pdflatex report_example.tex
+% [terminal]$ pdflatex report_example.tex
+%
+% This series of commands can of course be gathered into a single-line command:
+% [terminal]$ pdflatex report_example.tex && bibtex report_example.aux && pdflatex report_example.tex && pdflatex report_example.tex
+%
+% ----------------------------------------------------
+
+
+
+% \documentclass[english,notitlepage,reprint,nofootinbib]{revtex4-2}  % defines the basic parameters of the document
+\documentclass[english,notitlepage,reprint,nofootinbib]{revtex4-2}  % defines the basic parameters of the document
+% If you want a single-column, remove "reprint"
+
+% Allows special characters (including æøå)
+\usepackage[utf8]{inputenc}
+% \usepackage[english]{babel}
+
+% Note that you may need to download some of these packages manually, it depends on your setup.
+% It may be usefult to download TeXMaker, because it includes a large library of the most common packages.
+
+\usepackage{physics,amssymb}  % mathematical symbols (physics imports amsmath)
+\include{amsmath}
+\usepackage{graphicx}         % include graphics such as plots
+\usepackage{xcolor}           % set colors
+\usepackage{hyperref}         % automagic cross-referencing
+\usepackage{listings}         % display code
+\usepackage{subfigure}        % imports a lot of cool and useful figure commands
+% \usepackage{float}
+%\usepackage[section]{placeins}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{subfigure}
+\usepackage{tikz}
+\usepackage{cleveref}
+\usepackage[version=4]{mhchem} % Correct package for writing out isotopes
+\usetikzlibrary{quantikz}
+% defines the color of hyperref objects
+% Blending two colors:  blue!80!black  =  80% blue and 20% black
+\hypersetup{ % this is just my personal choice, feel free to change things
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}}
+
+
+% ===========================================
+
+
+\begin{document}
+
+\title{A Numerical Study of Penning Traps}  % self-explanatory
+\author{Michał Kiedrzyński, Ferdinand Nilius, Johannes Schäfers} % self-explanatory
+\date{\today}                             % self-explanatory
+\noaffiliation                            % ignore this, but keep it.
+
+%This is how we create an abstract section.
+\begin{abstract}
+    The stability of a Penning trap is studied using both numerical and analytical methods. 
+    An emphasis is placed upon the analysis of many charged particles interacting through the Coulomb force and the effects created by time dependent perturbations inside of Penning traps.
+    The coupled ordinary differential equations arising from this problem are solved numerically using Runge-Kutta-4, which is compared to the Forward Euler method.
+    Introducing small perturbations into the Penning trap resulted in the appearance of clear resonance effects. 
+    This lead to the escape of up to 100 percent of the particles escaping after just $ 500\mu \mathrm{s}$, if the introduced perturbations have a frequency around one of the resonance frequencies of the Penning trap.
+    These results show the instability created by the resonance effects of a Penning trap, which can lead to breakdowns of the underlying function.
+\end{abstract}
+\maketitle
+
+
+% ===========================================
+\section{Introduction}
+
+Since its first construction and use in 1959 by later Nobel laureate H. G. Dehmelt the Penning trap has gained relevance in a multitude of areas. 
+This relevance is given by their utility in storing charged particles, which many applications in modern physics and chemistry require to experimentally study the exact nature and properties of particles. 
+It achieves this by utilizing a static configuration of electric and magnetic fields.
+By applying a quadrupole electric potential, the trap creates an axial restoring force that confines particles along the $z$-axis, while a strong, uniform magnetic field prevents radial escape in the $xy$-plane by forcing the particles into cyclotron trajectories.
+While Dehmelt mostly performed spectroscopic measurements and studied the spin of the confined particles, modern applications include the study of anti-matter (prominent examples are ALPHA, AEGIS, and BASE conducted at CERN), plasma and the measurement and manipulation of individual quantum systems. For the latter, David Wineland and Serge Haroche were awarded the Nobel prize in 2012. \cite{PenningTrapbook} \\
+While single-particle motion in ideal Penning traps yields closed-form analytical solutions, real-world applications frequently involve multi-particle interactions and external perturbations. In such systems, mutual Coulomb interactions couple the equations of motion, rendering analytical solutions intractable and necessitating numerical simulations. \\
+In \cref{sec:methods}, we introduce the governing electrodynamic equations for ideal particles in ideal Penning traps.
+We then formulate these second-order systems into first-order differential equations and detail our numerical implementations using both the Forward Euler (FE) and fourth-order Runge-Kutta (RK4) integration schemes. \\
+\Cref{sec:results_and_discussion} contains a selection of results studying both single and multiple particle Penning traps numerically, performed on singly-charged Calcium ions ($Ca^{1+}$). 
+Furthermore, we evaluate the numerical accuracy against the known analytical benchmarks and analyze phase-space dynamics. Finally, we simulate a Penning trap with a time-dependent perturbation in the electric potential in order to study the loss of trapped particles as a function of the applied frequency and to identify the systems resonance frequency. \\
+The code developed for these investigations is available via a GitHub repository.\footnote{\href{https://github.uio.no/johascha/CompPhys/tree/master}{GitHub Repository} All code relevant for this project can be found in the folder Project\_3.}
+
+\section{Theory and Methods}\label{sec:methods}
+\input{Theory}
+\input{Methods}
+% ===========================================
+\section{Results and discussion}\label{sec:results_and_discussion}
+\input{Results_Discussion}
+% ===========================================
+\section{Conclusion}\label{sec:conclusion}
+\input{Conclusion}
+
+
+% ===========================================
+% \section*{Appendix A}\label{sec:AppendixA}
+
+% An appendix can be useful if there are details you want to include that do not fit in the main text. But if you include an appendix, make sure to explicitly refer to it somewhere in the main text.
+
+
+% ===========================================
+\onecolumngrid
+% \bibliographystyle{apalike}
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+
+\end{document}

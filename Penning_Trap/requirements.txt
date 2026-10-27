@@ -1,0 +1,3 @@
+# Python dependencies for Project 3 plotting and data formatting.
+matplotlib
+numpy

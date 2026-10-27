@@ -1,0 +1,141 @@
+\subsection*{Numerical algorithms}\label{sec:Algorithms}
+
+We use both FE and RK4 to solve the differential equations derived in the above section.
+FE is used as a point of comparison for RK4, as the implementation of the more accurate RK4 method can be complicated for coupled differential equations.
+
+\subsubsection{Forward Euler}
+The FE method is one of the simplest algorithms to numerically approximate the solution to ordinary differential equations. For a non-coupled differential equation, it can be written as \cite{Faul2016ACI}:
+\begin{equation*}
+    y_{i+1} = y_i + dt \cdot f(t_i,y_i)
+\end{equation*}
+As our equations (\cref{eq: coupledstart}-\cref{eq: coupledend}), which describe the movements of particles inside a Penning trap, are coupled, the method has to be rewritten into the form of \cref{eq:FEv} and \cref{eq:FEx}. Furthermore, we have to keep in mind that the equations describing our particles are three-dimensional and we therefore need to use vectors to describe the motion of the particles\cite{LectureNotes}. 
+\begin{equation}\label{eq:FEv}
+    \boldsymbol{v}_{i+1} = \boldsymbol{v}_i + dt \cdot f(t_i, \boldsymbol{r}_i, \boldsymbol{v}_i)
+\end{equation}
+\begin{equation}\label{eq:FEx}
+    \boldsymbol{r}_{i+1} = \boldsymbol{r}_i + dt \boldsymbol{v}_i
+\end{equation}
+For an initial value problem similar to the one posed through the coupled differential equations of the Penning trap, the local error of FE is $\mathcal{O}(dt^2)$. 
+Therefore, the global error of this method is of order $\mathcal{O}(dt)$.
+
+\subsubsection{Runge-Kutta-4}
+Similar to FE, RK4 is a numerical method for solving first-order differential equations of the form:
+\begin{equation*}
+    \frac{dy}{dt} = f(t,y).
+\end{equation*}
+The Butcher tableau for RK4 is given by \cref{tab:RK4-Butcher} \cite{Faul2016ACI}.
+\begin{table}[h]
+    \centering
+    \caption{Butcher Tableau for the RK4 method.}
+    \begin{tabular}{c|cccc}
+        0 & \\
+        0.5 & 0.5\\
+        0.5 & 0 & 0.5\\
+        1 & 0 & 0 & 1 \\
+        \hline
+         & $\frac{1}{6}$ & $\frac{1}{3}$ & $\frac{1}{3}$ & $\frac{1}{6}$
+    \end{tabular}
+    \label{tab:RK4-Butcher}
+\end{table}
+Therefore, we can describe RK4 for non-coupled differential equations using the pseudo-code given in \cref{algo:RK4} \cite{LectureNotes}. 
+\begin{figure}[H]
+    \begin{algorithm}[H]\label{algo:RK4}
+        \caption{RK4 Algorithm}
+        \label{algo:RK4}
+
+        \begin{algorithmic}[1]
+           \Require Number of timesteps $N_t$,
+                    step size $dt$,
+                    function $f(t,y)$,
+                    Initial condition(s): $y_0$, $t_0=0$
+
+        \For{$i=0$; $i < N_t$; i++}
+
+            \State $k_0 \gets dt f(t_i, y_i)$
+            \State $k_2 \gets dt f(t_i+ 0.5 \cdot dt, y_i+ 0.5 k_1)$
+            \State $k_3 \gets dt f(t_i+ 0.5 \cdot dt, y_i+ 0.5 k_2)$
+            \State $k_4 \gets dt f(t_i + \cdot dt, y_i+ k_3)$
+
+            \State $y_{i+1} = y_i + \frac{1}{6}(k_1 + 2k_2 + 2k_3 + k_4)$
+            \State $t_i \gets t_i + dt$
+         \EndFor
+
+        \State \Return $y$
+        \end{algorithmic}
+    \end{algorithm}
+\end{figure}
+This algorithm has a local error of order $\mathcal{O}(dt^5)$, which equates to a global error of order $\mathcal{O}(dt^4)$.
+For coupled differential equations, this algorithm has to be changed, as the calculation of the different $k$'s for every equation requires the approximated intermediate points of the other equations.
+\begin{figure}[h]
+    \begin{algorithm}[H]
+        \caption{RK4 algorithm for coupled differential equations}
+        \label{algo:RK4couple}
+
+        \begin{algorithmic}[1]
+            \Require Number of time steps $N_t$, step size $dt$,
+                     function $\boldsymbol{f}(t,\boldsymbol{x},\boldsymbol{v})$,
+                     initial conditions $\boldsymbol{x}_0$, $\boldsymbol{v}_0$,
+                     and $t_0=0$
+
+            \For{$i = 0$ to $N_t-1$}
+                \State $\boldsymbol{k}_{\boldsymbol{x},1} \gets dt\boldsymbol{v}_i$
+                \State $\boldsymbol{k}_{\boldsymbol{v},1} \gets
+                    dt\boldsymbol{f}(t_i,\boldsymbol{x}_i,\boldsymbol{v}_i)$ 
+                \Statex %Empty line
+                \State $\boldsymbol{k}_{\boldsymbol{x},2} \gets
+                    dt\left(\boldsymbol{v}_i+\frac{1}{2}k_{\boldsymbol{v},1}\right)$
+                \State $\boldsymbol{k}_{\boldsymbol{v},2} \gets
+                    dt\boldsymbol{f}\left(
+                    t_i+\frac{1}{2}dt,\,
+                    \boldsymbol{x}_i+\frac{1}{2}k_{\boldsymbol{x},1},\,
+                    \boldsymbol{v}_i+\frac{1}{2}k_{\boldsymbol{v},1}
+                    \right)$ 
+                \Statex %Empty line
+                \State $\boldsymbol{k}_{\boldsymbol{x},3} \gets
+                    dt\left(\boldsymbol{v}_i+\frac{1}{2}k_{\boldsymbol{v},2}\right)$
+                \State $\boldsymbol{k}_{\boldsymbol{v},3} \gets
+                    dt\boldsymbol{f}\left(
+                    t_i+\frac{1}{2}dt,\,
+                    \boldsymbol{x}_i+\frac{1}{2}k_{\boldsymbol{x},2},\,
+                    \boldsymbol{v}_i+\frac{1}{2}k_{\boldsymbol{v},2}
+                    \right)$ 
+                \Statex %Empty line
+                \State $\boldsymbol{k}_{\boldsymbol{x},4} \gets
+                    dt\left(\boldsymbol{v}_i+k_{\boldsymbol{v},3}\right)$
+                \State $\boldsymbol{k}_{\boldsymbol{v},4} \gets
+                    dt\boldsymbol{f}\left(
+                    t_i+dt,\,
+                    \boldsymbol{x}_i+k_{\boldsymbol{x},3},\,
+                    \boldsymbol{v}_i+k_{\boldsymbol{v},3}
+                    \right)$ 
+                \Statex %Empty line
+                \State $\boldsymbol{x}_{i+1} \gets \boldsymbol{x}_i
+                    +\frac{1}{6}\left(
+                    \boldsymbol{k}_{\boldsymbol{x},1}+2\boldsymbol{k}_{\boldsymbol{x},2}
+                    +2\boldsymbol{k}_{\boldsymbol{x},3}+\boldsymbol{k}_{\boldsymbol{x},4}
+                    \right)$ 
+                \State $\boldsymbol{v}_{i+1} \gets \boldsymbol{v}_i
+                    +\frac{1}{6}\left(
+                    \boldsymbol{k}_{\boldsymbol{v},1}+2\boldsymbol{k}_{\boldsymbol{v},2}
+                    +2\boldsymbol{k}_{\boldsymbol{v},3}+\boldsymbol{k}_{\boldsymbol{v},4}
+                    \right)$ 
+                \State $t_{i+1} \gets t_i+dt$
+            \EndFor
+
+            \State \Return $\boldsymbol{x},\boldsymbol{v}$
+        \end{algorithmic}
+    \end{algorithm}
+\end{figure}
+
+For our implementations of the numerical solver for equations \ref{eq: coupledstart} - \ref{eq: coupledend}, we rewrote this algorithm to the form presented in \cref{algo:RK4couple}. This also required us to reformulate all variables of the problem into vectors, as the set of equations \ref{eq: coupledstart} - \ref{eq: coupledend} presents a 3-dimensional problem.
+
+In the implementation $\boldsymbol{f}(t,\boldsymbol{x},\boldsymbol{v})$ forms the right hand side of \cref{eq:vstart} - \cref{eq: coupledend}. If there is more than one particle in the Penning trap, the algorithm has to calculate all values $k_i$ for every particle before calculating the next $k_{i+1}$ and before taking a step. This is caused by the coupling between particles introduced through the Coulomb force in \cref{eq:vstart} - \cref{eq: coupledend}. \\
+In our code, both FE and RK4 are implemented as classes, which are passed to a Penning trap and evolve the system for a given time step.
+
+One of our goals is to compare the accuracy of both methods and the convergence towards the analytical solution. Therefore, we conduct a numerical study with $n_1 =4000, \, n_2 = 8000, \, n_3 =16000$ and $n_4=32000$ time steps for a single particle Penning trap, which are then compared to the analytical solutions derived above.
+
+For Hamiltonian systems, symplectic methods conserve the phase space volume of the system and can therefore create a bound on the energy error. However, neither FE nor RK4 is a symplectic method. Therefore, we do not expect the implemented methods to conserve the phase space volume of our system, which can result in a drift in total energy, even if our analytical prediction is for a system to stay stable. \cite{LectureNotes}
+
+\subsection*{Tools}
+
+We used the Python library \texttt{matplotlib} \cite{Hunter:2007} to produce all illustrations in this report. The underlying C++ Code depends on the library \texttt{Armadillo} \cite{sanderson2025armadillo}. Large language models GPT 6-Luna and Gemini 4-Argon were used in order to debug small parts of the produced code.
