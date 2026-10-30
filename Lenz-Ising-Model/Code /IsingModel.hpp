@@ -6,11 +6,11 @@
 
 class IsingModel {
 private:
-    int L;
-    int N;
-    double T;
-    double current_energy;
-    double current_magnetization;
+    int L = 0;
+    int N = 0;
+    double T = 0.0;
+    double current_energy = 0.0;
+    double current_magnetization = 0.0;
     int mc_cycles = 0;
 
     //define the Matrix with armadillo
@@ -22,10 +22,10 @@ private:
 
     //acumulator for variance calculations 
 
-    double sum_energy = 0;
-    double sum_energy2 = 0;
-    double sum_m = 0;
-    double sum_m2 = 0; 
+    double sum_energy = 0.0;
+    double sum_energy2 = 0.0;
+    double sum_m = 0.0;
+    double sum_m2 = 0.0; 
 
     //using the pseudo random generator engine as rand() from <cstdlib> has weak statistical randomness
     std::mt19937 rng;
