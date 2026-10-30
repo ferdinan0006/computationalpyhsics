@@ -1,4 +1,4 @@
-#include <IsingModel.hpp>
+#include "IsingModel.hpp"
 #include <cmath>
 
 //Building the Constructor to setup the variables
@@ -21,23 +21,44 @@ IsingModel::IsingModel(int L_in, double T_in, bool random_start) {
 
 };
 
-//building the functions
+//filling the matrix (the lattice)
 void IsingModel::initialize_Lattice(bool random_start) {
+    //fill the lattice with +1 or -1
+    for (int i = 0; i < L; ++i) {
+        for (int j = 0; j < L; ++j) {
+            if (random_start) {
+                // 50% chance for -1, 50% chance for +1
+                spin_lattice(i, j) = (uniform_dist(rng) < 0.5) ? -1 : 1;
+            } else {
+                spin_lattice(i, j) = 1; //ordered 
+            }
+        }
+    }
 
+    //calculate the initial energy and magnetization
+    current_energy = 0.0;
+    current_magnetization = 0.0;
+    for (int i = 0; i < L; ++i) {
+        for (int j = 0; j < L; ++j) {
+            int s = spin_lattice(i, j);
+            current_magnetization += s;
+            
+            int right_neighbor = spin_lattice(i, pbc(j + 1));
+            int bottom_neighbor = spin_lattice(pbc(i + 1), j);
+            current_energy -= s * (right_neighbor + bottom_neighbor);
+        }
+    }
 };
 
 //precompute the factors for every possible dE (8,4,0,-4,-8)
 void IsingModel::precompute_boltzmann_factors() {
-    boltzman_factors.resize(9);
-    for (int dE = -8; dE <= 8; dE += 4) {
-        if (dE > 0) {
-            boltzman_factors[dE] = std::exp(-dE / T);
-        }
-        else {
-            boltzman_factors[dE] = 1.0;
-        }
-    }
-};
+    //resize to 9, fill all with 1.0 by default
+    boltzman_factors.assign(9, 1.0);
+    
+    //calculate two positive cases 
+    boltzman_factors[4] = std::exp(-4.0 / T);
+    boltzman_factors[8] = std::exp(-8.0 / T);
+}
 
 //setting the boundary conditions 
 inline int IsingModel::pbc(int idx) {
@@ -103,8 +124,9 @@ void IsingModel::calculate_macroscopic_quantities(double& e, double& abs_m, doub
     double avg_m2 = sum_m2 / mc_cycles; 
 
     //per spin variance 
-    double var_energy = avg_energy2 / (e * e);
-    double var_m2 = avg_m2 / (abs_m * abs_m); 
+    //per spin variance 
+    double var_energy = avg_energy2 - (e * e);
+    double var_m2 = avg_m2 - (abs_m * abs_m);
 
     //calculate Cv/N and chi/N (unitless kB = 1)
     cv = (N / (T * T)) * var_energy;

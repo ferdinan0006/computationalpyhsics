@@ -11,7 +11,7 @@ private:
     double T;
     double current_energy;
     double current_magnetization;
-    int mc_cycles;
+    int mc_cycles = 0;
 
     //define the Matrix with armadillo
 

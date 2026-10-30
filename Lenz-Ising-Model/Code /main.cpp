@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iomanip>
 #include <string>
-#include  <IsingModel.hpp>
+#include "IsingModel.hpp"
 
 int main(int argc, char* argv[]) {
     //the line makes sure that exactly 4 user parameters were passed (L, T, mc_cycles, filename)
@@ -15,6 +15,8 @@ int main(int argc, char* argv[]) {
     int L = std::stoi(argv[1]);
     int mc_cycles = std::stoi(argv[2]);
     double T = std::stod(argv[3]); //parsing floating point values for Temp
+
+    // I would implement the temperature loop here for task 8 and 9 and use OpenMD parallel computing 
     std::string filename = argv[4];
 
     //executing the class constructor from IsingModel
