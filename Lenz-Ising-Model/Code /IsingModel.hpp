@@ -11,6 +11,7 @@ private:
     double T;
     double current_energy;
     double current_magnetization;
+    int mc_cycles;
 
     //define the Matrix with armadillo
 
@@ -43,5 +44,5 @@ private:
 public:
     IsingModel(int L_in, double T_in, bool random_start);
     void perform_mc_cycle();
-    void void calculate_macroscopic_quantities(double& e, double& abs_m, double& cv, double& chi);
+    void calculate_macroscopic_quantities(double& e, double& abs_m, double& cv, double& chi);
 };

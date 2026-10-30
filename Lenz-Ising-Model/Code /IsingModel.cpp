@@ -31,10 +31,10 @@ void IsingModel::precompute_boltzmann_factors() {
     boltzman_factors.resize(9);
     for (int dE = -8; dE <= 8; dE += 4) {
         if (dE > 0) {
-            boltzmann_factors[dE] = std::exp(-dE / T);
+            boltzman_factors[dE] = std::exp(-dE / T);
         }
         else {
-            boltzmann_factors[dE] = 1.0;
+            boltzman_factors[dE] = 1.0;
         }
     }
 };
@@ -51,14 +51,38 @@ void IsingModel::perform_mc_cycle() {
         int i = spin_dist(rng);
         int j = spin_dist(rng);
 
-        // Compute dE using pbc(...) for neighbors
-        // Evaluate Metropolis test
-        // Update spin_lattice, current_energy, and current_magnetization if accepted
+        //compute the inner loop
+        //find the current spin and the sum of its 4 periodic partners 
+        int current_spin = spin_lattice(i,j);
+        int sum_neighbors = spin_lattice(pbc(i+1), j) + spin_lattice(pbc(i-1), j) + spin_lattice(i, pbc(j+1)) + spin_lattice(i, pbc(j-1));
+        //compute dE 
+        int dE = 2* current_spin * sum_neighbors;
+        //Metropolis test
+        bool accept = false; 
+        if (dE <= 0) {
+            accept = true; //always accept energ lowering or similar energy
+        }
+        else {
+            //draw random number between [0,1) for comparison with precomputed factor 
+            if (uniform_dist(rng) <= boltzman_factors[dE]) {
+                accept = true;
+            }
+        }
+        //update spin lattice 
+        if (accept) {
+            spin_lattice(i,j) *= -1; //spin
+            current_energy += dE; //add difference
+
+            //the spin jut flipped, so the net change is exactly twice the net spin value 
+            current_magnetization += 2 * spin_lattice(i, j);
+
+        }
 
     }
+
     //calculating the sums 
-    sum_e += current_energy / N;
-    sum_e2 += (current_energy / N) * (current_energy / N);
+    sum_energy  += current_energy / N;
+    sum_energy2 += (current_energy / N) * (current_energy / N);
     sum_m += std::abs(current_magnetization) / N;
     sum_m2 += (current_magnetization / N) * (current_magnetization / N);
     //increment mc_cylces
@@ -68,7 +92,24 @@ void IsingModel::perform_mc_cycle() {
 //calculating final expected values
 
 void IsingModel::calculate_macroscopic_quantities(double& e, double& abs_m, double& cv, double& chi) {
+    if (mc_cycles == 0) return;
     //create the average over all completed cycles 
+    //first order values after each spin
+    e = sum_energy / mc_cycles; 
+    abs_m = sum_m / mc_cycles;
+
+    //second order values per spin 
+    double avg_energy2 = sum_energy2 / mc_cycles;
+    double avg_m2 = sum_m2 / mc_cycles; 
+
+    //per spin variance 
+    double var_energy = avg_energy2 / (e * e);
+    double var_m2 = avg_m2 / (abs_m * abs_m); 
+
+    //calculate Cv/N and chi/N (unitless kB = 1)
+    cv = (N / (T * T)) * var_energy;
+    chi = (N / T) * var_m2;
+
 };
 
 
