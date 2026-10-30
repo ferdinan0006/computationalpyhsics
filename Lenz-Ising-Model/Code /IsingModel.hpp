@@ -24,7 +24,7 @@ private:
     double sum_energy = 0;
     double sum_energy2 = 0;
     double sum_m = 0;
-    double sum_m2 = 0;
+    double sum_m2 = 0; 
 
     //using the pseudo random generator engine as rand() from <cstdlib> has weak statistical randomness
     std::mt19937 rng;
