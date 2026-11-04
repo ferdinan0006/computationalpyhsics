@@ -7,7 +7,7 @@
 int main(int argc, char* argv[]) {
     //the code expects five parameter, first checking if the request delivers all of them
     if (argc != 6) {
-        std::cerr <<'Usage: ' <<argv[0] <<'<L>, <mc_cycles>, <T>, <Ordered Start (1 = Yes, 0 = No)>, <output_filename.csv>\n';
+        std::cerr <<"Usage: " <<argv[0] <<"<L>, <mc_cycles>, <T>, <Ordered Start (1 = Yes, 0 = No)>, <output_filename.csv>\n";
         return 1; 
     }
 
@@ -31,9 +31,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     //write the files header 
-    outfile <<"cycle, cumulative_e, cumulative_abs\n";
+    outfile <<"cycle, cumulative_e, cumulative_abs, current_energy\n";
 
     std::cout <<"Running Burn in simulation for T=" << T << (random_state ? " (Random Start)" : " (Ordered Start)") << "...\n";
+
+    int N = L * L;
 
     //runnning mc with metropolis 
     for (int cycle = 1; cycle <= mc_cycles; ++cycle) {
@@ -42,8 +44,13 @@ int main(int argc, char* argv[]) {
         double e,abs_m, cv, chi;
         //calculating the average using all values calculated so far 
         model.calculate_macroscopic_quantities(e, abs_m, cv, chi);
+
+        double current_energy_per_spin = model.get_current_energy() / (double)N;
+
         //write cycle number and current epsilon to output file
-        outfile << std::fixed << std::setprecision(8) << cycle << ","  << e << ","  << abs_m << "\n";
+        outfile << std::fixed << std::setprecision(8) << cycle << ","  << e << ","  << abs_m  << "," << current_energy_per_spin << "\n";
+
+        
 
     }
 

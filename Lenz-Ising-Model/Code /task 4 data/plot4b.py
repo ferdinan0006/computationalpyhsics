@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import pandas as pd
 
-df = pd.read_csv('results_task4b.csv')
+df = pd.read_csv('task 4 data/results_task4b.csv')
 
 variables = ['e', 'abs_m', 'cv', 'chi']
 x = np.arange(len(variables))
@@ -29,5 +29,5 @@ ax.axhline(0, color='black', linewidth=0.8)
 ax.legend(title='Temperature')
 ax.grid(axis='y', alpha=0.3)
 fig.tight_layout()
-fig.savefig('plot4b.png', dpi=300)
+#'fig.savefig('plot4b.png', dpi=300)'
 plt.show()

@@ -45,4 +45,6 @@ public:
     IsingModel(int L_in, double T_in, bool random_start);
     void perform_mc_cycle();
     void calculate_macroscopic_quantities(double& e, double& abs_m, double& cv, double& chi);
+
+    double get_current_energy() const { return current_energy; }
 };
