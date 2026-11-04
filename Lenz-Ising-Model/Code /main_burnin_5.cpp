@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iomanip>
 #include <string>
-#include "IsingModel.cpp"
+#include "IsingModel.hpp"
 
 int main(int argc, char* argv[]) {
     //the code expects five parameter, first checking if the request delivers all of them
@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
 
     int L = std::stoi(argv[1]);
     int mc_cycles = std::stoi(argv[2]);
-    int T = std::stoi(argv[3]);
+    double T = std::stod(argv[3]);
 
     //if ordered state is true, random start has to be set to zero so every spin will be filled with + 1
     int ordered_input = std::stoi(argv[4]);
@@ -27,13 +27,13 @@ int main(int argc, char* argv[]) {
     //if the output file is urrently open, return error since its a specif burn in trace 
     std::ofstream outfile(filename);
     if (!outfile.is_open()) {
-        std::cerr <<'Error: Could not open the file\n';
+        std::cerr <<"Error: Could not open the file\n";
         return 1;
     }
     //write the files header 
-    outfile <<'cycle, cumulative_e, cumulative_abs\n';
+    outfile <<"cycle, cumulative_e, cumulative_abs\n";
 
-    std::cout <<'Running Burn in simulation for T=' << T << (random_state ? " (Random Start)" : " (Ordered Start)") << "...\n";
+    std::cout <<"Running Burn in simulation for T=" << T << (random_state ? " (Random Start)" : " (Ordered Start)") << "...\n";
 
     //runnning mc with metropolis 
     for (int cycle = 1; cycle <= mc_cycles; ++cycle) {
