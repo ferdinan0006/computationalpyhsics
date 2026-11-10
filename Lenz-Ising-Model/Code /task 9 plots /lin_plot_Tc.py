@@ -54,8 +54,12 @@ Tc_inf_cv = model_cv.intercept_
 
 Tc_exact = 2 / np.log(1 + np.sqrt(2))
 
-error_chi = abs(Tc_inf_chi - Tc_exact)
-error_cv = abs(Tc_inf_cv - Tc_exact)
+#statistical error from linear regression
+residuals_chi = Tc_chis - model_chi.predict(X)
+residuals_cv = Tc_cvs - model_cv.predict(X)
+
+error_chi = np.sqrt(np.sum(residuals_chi**2) / (len(Tc_chis) - 2))
+error_cv = np.sqrt(np.sum(residuals_cv**2) / (len(Tc_cvs) - 2))
 
 relative_error_chi = error_chi / Tc_exact * 100
 relative_error_cv = error_cv / Tc_exact * 100
@@ -64,18 +68,16 @@ r2_chi = model_chi.score(X, Tc_chis)
 r2_cv = model_cv.score(X, Tc_cvs)
 
 print("Susceptibility:")
-print(f"  a              = {a_chi:.6f}")
-print(f"  Tc(infinity)   = {Tc_inf_chi:.6f}")
-print(f"  Absolute error = {error_chi:.6f}")
-print(f"  Relative error = {relative_error_chi:.3f}%")
-print(f"  R²             = {r2_chi:.4f}")
+print(f"  a                    = {a_chi:.6f}")
+print(f"  Tc(infinity)         = {Tc_inf_chi:.6f}")
+print(f"  Regression SD        = {error_chi:.6f}")
+print(f"  R²                   = {r2_chi:.4f}")
 
 print("\nHeat capacity:")
-print(f"  a              = {a_cv:.6f}")
-print(f"  Tc(infinity)   = {Tc_inf_cv:.6f}")
-print(f"  Absolute error = {error_cv:.6f}")
-print(f"  Relative error = {relative_error_cv:.3f}%")
-print(f"  R²             = {r2_cv:.4f}")
+print(f"  a                    = {a_cv:.6f}")
+print(f"  Tc(infinity)         = {Tc_inf_cv:.6f}")
+print(f"  Regression SD        = {error_cv:.6f}")
+print(f"  R²                   = {r2_cv:.4f}")
 
 #fitted curves
 x_fit = np.linspace(0, inverse_L.max() * 1.1, 200)
