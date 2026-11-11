@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import pandas as pd
 
-filenames = ['task 5 data /burn_in_T1_ordered_per_spin.csv', 
-             'task 5 data /burn_in_T1_random_per_spin.csv', 
-             'task 5 data /burn_in_T24_ordered_per_spin.csv', 
-             'task 5 data /burn_in_T24_random_per_spin.csv']
+filenames = ['burn_in_T1_ordered_per_spin.csv', 
+             'burn_in_T1_random_per_spin.csv', 
+             'burn_in_T24_ordered_per_spin.csv', 
+             'burn_in_T24_random_per_spin.csv']
 
 # empty dic that can be filled 
 data = {}
@@ -57,17 +57,20 @@ ax2.plot(n_MC_cycles, mean_eps_T24_u, '-', linewidth=2.0, color='#e41a1c', label
 ax2.plot(n_MC_cycles, mean_eps_T24_o, '-', linewidth=2.0, color='#984ea3', label='Mean $E$ (T=2.4, Ordered)')
 
 #formatting for readablity 
-ax1.set_ylabel('Current Energy per Spin $E/N$')
-ax2.set_ylabel('Energy per Spin $\\langle E \\rangle / N$')
-ax2.set_xlabel('Number of Monte Carlo Cycles')
-fig.suptitle('Burn-in Time Analysis: Current vs. Cumulative Energy')
+ax1.set_ylabel('Current Energy per Spin $E/N$', fontsize = '18')
+ax2.set_ylabel('Energy per Spin $\\langle E \\rangle / N$', fontsize = '18')
+ax2.set_xlabel('Number of Monte Carlo Cycles', fontsize = '18')
+#no title just caption
+#fig.suptitle('Burn-in Time Analysis: Current vs. Cumulative Energy')
+ax1.tick_params(axis='both', labelsize=14)
+ax2.tick_params(axis='both', labelsize=14)
 
 #logarithmic x axis 
 ax2.set_xscale('log')
 
 #legend outside the plot, nothing will be covered
-ax1.legend(loc='upper left', bbox_to_anchor=(1.02, 1), fontsize='small', ncol=1)
-ax2.legend(loc='upper left', bbox_to_anchor=(1.02, 1), fontsize='small', ncol=1)
+ax1.legend(loc='upper right', bbox_to_anchor=(1.02, 1), fontsize='small', ncol=1)
+ax2.legend(loc='upper right', bbox_to_anchor=(1.02, 1), fontsize='small', ncol=1)
 
 ax1.grid(True, alpha=0.3)
 ax2.grid(True, alpha=0.3)
