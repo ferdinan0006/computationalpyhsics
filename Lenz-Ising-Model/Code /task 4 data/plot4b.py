@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import pandas as pd
 
-df = pd.read_csv('task 4 data/results_task4b.csv')
+df = pd.read_csv('results_task4b.csv')
 
 variables = ['e', 'abs_m', 'cv', 'chi']
 x = np.arange(len(variables))
@@ -23,11 +23,14 @@ for color, (_, row) in zip(colors, df.iterrows()):
     )
 
 ax.set_xticks(x, variables)
-ax.set_ylabel('Value')
-ax.set_title('Lenz-Ising model observables for different temperatures')
+ax.tick_params(axis='x', labelsize=16)
+ax.tick_params(axis='y', labelsize=16)
+ax.set_ylabel('unitless value', fontsize = '18')
+#ax.set_title('Lenz-Ising model observables for different temperatures') no title, just caption
 ax.axhline(0, color='black', linewidth=0.8)
-ax.legend(title='Temperature')
+ax.legend(title='Temperature', fontsize = '14')
 ax.grid(axis='y', alpha=0.3)
+
 fig.tight_layout()
-#'fig.savefig('plot4b.png', dpi=300)'
+fig.savefig('plot4b.png', dpi=300)
 plt.show()
