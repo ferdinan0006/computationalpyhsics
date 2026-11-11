@@ -72,8 +72,8 @@ ax1.set_title(
     pad=15
 )
 
-ax1.set_ylabel(r"Susceptibility $\chi/N$", fontsize=12)
-ax1.legend(frameon=False, fontsize=10)
+ax1.set_ylabel(r"Susceptibility $\chi/N$", fontsize=18)
+ax1.legend(frameon=False, fontsize=14)
 
 #cv subplot
 for L, temp, cv, color in zip(gridsizes, temperatures, cvs, colors):
@@ -103,22 +103,22 @@ ax2.set_title(
     pad=15
 )
 
-ax2.set_xlabel(r"Temperature $T$", fontsize=12)
-ax2.set_ylabel(r"Heat capacity $C_V/N$", fontsize=12)
+ax2.set_xlabel(r"Temperature $T$", fontsize=18)
+ax2.set_ylabel(r"Heat capacity $C_V/N$", fontsize=18)
 
 #design
 for ax in axes:
     ax.grid(alpha=0.2, linestyle="--")
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    ax.tick_params(axis="both", labelsize=10)
+    ax.tick_params(axis="both", labelsize=14)
 
-#title
+'''#title
 fig.suptitle(
     "2D Ising Model: Critical Behavior for Different Lattice Sizes",
     fontsize=17,
     fontweight="bold"
-)
+)'''
 
 fig.tight_layout(rect=[0, 0, 1, 0.97])
 '''
