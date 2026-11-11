@@ -48,12 +48,12 @@ for n, t in zip(threads, total_times):
         color="#1E293B"
     )
 
-ax.set_title(
+'''ax.set_title(
     "OpenMP Parallel Performance",
     fontsize=17,
     fontweight="bold",
     pad=20
-)
+)'''
 
 ax.set_xlabel("Number of threads", fontsize=12, labelpad=10)
 ax.set_ylabel("Total simulation time (s)", fontsize=12, labelpad=10)
@@ -75,7 +75,7 @@ ax.text(
     transform=ax.transAxes,
     ha="right",
     va="top",
-    fontsize=11,
+    fontsize=18,
     color="#475569"
 )
 
