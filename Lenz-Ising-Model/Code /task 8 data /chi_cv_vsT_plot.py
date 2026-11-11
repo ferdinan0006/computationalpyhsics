@@ -121,10 +121,10 @@ fig.suptitle(
 )'''
 
 fig.tight_layout(rect=[0, 0, 1, 0.97])
-'''
+
 plt.savefig(
     "critical_behavior_comparison.png",
     dpi=300,
-    bbox_inches="tight")'''
+    bbox_inches="tight")
 
 plt.show()
