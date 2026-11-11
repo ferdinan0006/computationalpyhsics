@@ -178,26 +178,26 @@ ax.axhline(
     label=fr"Onsager: $T_c={Tc_exact:.4f}$"
 )
 
-ax.set_title(
+'''ax.set_title(
     "Finite-Size Scaling of the 2D Ising Model",
     fontsize=16,
     fontweight="bold",
     pad=18
-)
+)'''
 
-ax.set_xlabel(r"Inverse lattice size $1/L$", fontsize=12)
-ax.set_ylabel(r"Critical temperature $T_c(L)$", fontsize=12)
+ax.set_xlabel(r"Inverse lattice size $1/L$", fontsize=18)
+ax.set_ylabel(r"Critical temperature $T_c(L)$", fontsize=18)
 
 ax.set_xlim(left=0, right=inverse_L.max() * 1.12)
 
 ax.grid(alpha=0.2, linestyle="--")
-ax.legend(frameon=False, fontsize=9)
+ax.legend(frameon=False, fontsize=14)
 
 ax.spines["left"].set_position(("data", 0))
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 
-ax.tick_params(axis="both", labelsize=10)
+ax.tick_params(axis="both", labelsize=14)
 
 fig.tight_layout()
 
